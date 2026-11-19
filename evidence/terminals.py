@@ -32,3 +32,14 @@ def inspect_terminals(layout: SurveyLayout, revision: FrozenRevision,
         if cell in labels:
             groups[labels[cell]].append(port)
     return TerminalObservation(threshold, tuple(sorted(tuple(group) for group in groups.values())))
+
+
+def terminal_layers(layout: SurveyLayout, revision: FrozenRevision) -> tuple[TerminalObservation, ...]:
+    """Public port activity and true in-tile connectivity for every gate 0..100.
+
+    Interior pixel coordinates and pointwise scores remain at the station; only
+    the public ports' grouping at each integer threshold leaves in the packet.
+    """
+    if revision.survey_id != layout.survey_id:
+        raise ValueError('revision belongs to another survey')
+    return tuple(inspect_terminals(layout, revision, threshold) for threshold in range(101))
